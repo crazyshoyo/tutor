@@ -26,7 +26,7 @@ class MobileOverlay extends StatelessWidget {
         VideoGestureDetector(
           tag: tag,
           child: ColoredBox(
-            color: Theme.of(context).cardColor,
+            color: Theme.of(context).cardColor.withOpacity(0.3),
             child: Row(
               children: [
                 Expanded(

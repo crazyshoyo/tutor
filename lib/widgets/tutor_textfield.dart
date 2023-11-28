@@ -34,6 +34,7 @@ class TutorLmsTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      style: AppTextStyle.normalTextStyle(FontSize.sp_14, Theme.of(context).highlightColor),
       autovalidateMode: AutovalidateMode.onUserInteraction,
       validator: validator,
       cursorColor: Theme.of(context).shadowColor,
@@ -42,7 +43,7 @@ class TutorLmsTextField extends StatelessWidget {
         fillColor: color ?? Theme.of(context).cardColor,
           filled: true,
           counterText: ' ',
-        contentPadding: contentPadding ?? const EdgeInsets.all(10),
+        contentPadding: contentPadding ?? const EdgeInsets.only(top: 8,bottom: 8,left: 10,right: 10),
           enabledBorder: OutlineInputBorder(
             borderSide:  borderEnable ? BorderSide(color: Theme.of(context).shadowColor.withOpacity(0.3)) : const BorderSide(color: AppColor.transparent),
             borderRadius: BorderRadius.circular(8),
@@ -110,15 +111,14 @@ class TradeBitTextFieldLabel extends StatelessWidget {
         SizedBox(
           height: height ?? Dimensions.h_60,
           child: TextFormField(
-            // autovalidateMode: AutovalidateMode.onUserInteraction,
-            // validator: Validator.emailValidate,
+            style: AppTextStyle.normalTextStyle(FontSize.sp_14, Theme.of(context).highlightColor),
             cursorColor: Theme.of(context).shadowColor,
             controller: controller,
             decoration: InputDecoration(
                 fillColor: color ?? Theme.of(context).cardColor,
                 filled: true,
                 counterText: ' ',
-                contentPadding: contentPadding ?? const EdgeInsets.all(20),
+                contentPadding: contentPadding ?? const EdgeInsets.only(left: 10,right: 10,top: 8,bottom: 8),
                 enabledBorder: OutlineInputBorder(
                   borderSide:  borderEnable ? BorderSide(color: Theme.of(context).shadowColor.withOpacity(0.3)) : const BorderSide(color: AppColor.transparent),
                   borderRadius: BorderRadius.circular(8),

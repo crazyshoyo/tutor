@@ -7,6 +7,7 @@ import 'package:tutor_lms/data.datasource/remote/models/request/register_request
 import 'package:tutor_lms/data.datasource/remote/models/response/UserUpdate.dart';
 import 'package:tutor_lms/data.datasource/remote/models/response/change_password_response.dart';
 import 'package:tutor_lms/data.datasource/remote/models/response/forgot_password_response.dart';
+import 'package:tutor_lms/data.datasource/remote/models/response/notofication_response.dart';
 import 'package:tutor_lms/data.datasource/remote/models/response/register_response.dart';
 import '../../core/error/exceptions.dart';
 import '../../core/error/failures.dart';
@@ -83,6 +84,15 @@ class AuthRepositoryImpl {
     try {
       final response = await _restClient.get(url: Apis.userdetail);
       return Right(userUpdateFromJson(response));
+    }on ApiException catch (e) {
+      return Left(ServerFailure(e.message,e.type));
+    }
+  }
+
+  Future<Either<Failure,NotificationResponse >> notification() async {
+    try {
+      final response = await _restClient.get(url: Apis.notification);
+      return Right(notificationResponseFromJson(response));
     }on ApiException catch (e) {
       return Left(ServerFailure(e.message,e.type));
     }

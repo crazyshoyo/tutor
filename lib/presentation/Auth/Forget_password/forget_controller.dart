@@ -15,11 +15,6 @@ class ForgotController extends GetxController {
   bool isEmail = true;
   AuthRepositoryImpl repositoryImpl = AuthRepositoryImpl();
 
-  emailButton() {
-    isEmail = !isEmail;
-    update([ControllerBuilders.forgotController]);
-  }
-
   forgotByEmail(BuildContext context) async {
   loading = true;
   update([ControllerBuilders.forgotController]);
@@ -38,8 +33,8 @@ class ForgotController extends GetxController {
     }, (r) {
       loading = false;
       ToastUtils.showCustomToast(context, r.message ?? '', true);
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> const Login()));
       update([ControllerBuilders.forgotController]);
-
 
     });
     update([ControllerBuilders.forgotController]);

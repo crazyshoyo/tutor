@@ -15,7 +15,6 @@ class LoginController extends GetxController {
   TextEditingController emailTextController = TextEditingController();
   TextEditingController passwordTextController = TextEditingController();
   TextEditingController phoneController = TextEditingController();
-  GlobalKey<FormState> loginKey = GlobalKey<FormState>();
   bool closeEye = true;
   bool isPhone = false;
   bool isEmail = true;
@@ -60,7 +59,10 @@ class LoginController extends GetxController {
       ToastUtils.showCustomToast(context, r.message ?? '', true);
       LocalStorage.setAuthToken(r.elarnivUsersToken);
       LocalStorage.writeBool(GetXStorageConstants.isLogin, true);
+      LocalStorage.writeBool(GetXStorageConstants.userLogin, false);
       update([ControllerBuilders.loginPageController]);
+      emailTextController.clear();
+      passwordTextController.clear();
       Get.toNamed(AppRoutes.dashBoard);
     }
     );

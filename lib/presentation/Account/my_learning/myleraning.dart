@@ -9,6 +9,7 @@ import 'package:tutor_lms/data.datasource/local/local_storage.dart';
 import 'package:tutor_lms/presentation/Account/my_learning/learning_controller.dart';
 import 'package:tutor_lms/presentation/tutor_lm_scaffold.dart';
 import 'package:tutor_lms/widgets/common_appbar.dart';
+import 'package:tutor_lms/widgets/ozstaff_loader.dart';
 import '../../../constants/appcolor.dart';
 import '../../../constants/apptextstyle.dart';
 import '../../../constants/fontsize.dart';
@@ -43,26 +44,29 @@ class _MyLearningState extends State<MyLearning> {
       init: learningController,
       id: ControllerBuilders.learningController,
       builder: (controller) {
-        return   SafeArea(
-          child: TutorLmsScaffold(
-            appBar: PreferredSize(preferredSize: Size.fromHeight(Dimensions.h_60), child:
-            TutorLmsAppbar(title: 'My Learnings',onTap: ()=> Navigator.pushReplacement(context,
-                MaterialPageRoute(builder: (context)=> DashBoard(index: 3))),color: Theme.of(context).scaffoldBackgroundColor,)),
-              body: Column(
-                children: [
-                  VerticalSpacing(height: Dimensions.h_10),
-                  SizedBox(
-                      height: Dimensions.h_230,
-                      child: controller.loading ?  Center(
-                        child: Padding(
-                          padding: EdgeInsets.only(top: Dimensions.h_80),
-                          child: const CupertinoActivityIndicator(
-                            radius: 15,
-                          ),
+        return   WillPopScope(
+          onWillPop: () async => false,
+          child: SafeArea(
+            child: TutorLmsScaffold(
+              appBar: PreferredSize(preferredSize: Size.fromHeight(Dimensions.h_50), child:
+              TutorLmsAppbar(title: 'My Learnings',onTap: ()=> Navigator.pushReplacement(context,
+                  MaterialPageRoute(builder: (context)=> DashBoard(index: 3))),color: Theme.of(context).scaffoldBackgroundColor,)),
+                body: controller.loading ?  const Center(
+                  child: TutorActivityIndicator(),
+                ) :  Padding(
+                  padding:  EdgeInsets.only(left: Dimensions.w_10,right: Dimensions.w_10),
+                  child: Column(
+                    children: [
+                      VerticalSpacing(height: Dimensions.h_10),
+                       (controller.list?.isNotEmpty ?? false) ?
+                      GridView.builder(
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                          childAspectRatio: 2/2.4,
+                          crossAxisSpacing: 5,
+                          mainAxisSpacing: 15,
+                          crossAxisCount: 2,
                         ),
-                      ) : (controller.list?.isNotEmpty ?? false) ? ListView.builder(
                         shrinkWrap: true,
-                        scrollDirection: Axis.horizontal,
                         itemCount: controller.list?.length ?? 0,
                         itemBuilder: (BuildContext context, int index) {
                           return GestureDetector(
@@ -72,11 +76,11 @@ class _MyLearningState extends State<MyLearning> {
                                   context,
                                   MaterialPageRoute(
                                       builder: (c) => CourseTutor(
+                                        id: controller.list?[index].courseId ?? 0,
                                           slug: controller.list?[index].course?.slug ?? '')));
                             } ,
                             child: TutorLmsConatiner(
                               width: Dimensions.w_185,
-                              padding: EdgeInsets.only(top: Dimensions.h_10,bottom: Dimensions.h_10,left: Dimensions.w_12,right: Dimensions.w_12),
                               margin: EdgeInsets.only(
                                 right: Dimensions.w_10,
                               ),
@@ -86,76 +90,78 @@ class _MyLearningState extends State<MyLearning> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  SizedBox(
-                                    height: Dimensions.h_120,
-                                    width: Dimensions.w_160,
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(10),
-                                      child: TlCachedNetworkImage(
-                                        imageUrl:
-                                        controller.list?[index].course?.image ?? '',
-                                      ),
+                                  Container(
+                                    padding: EdgeInsets.zero,
+                                    height: Dimensions.h_100,
+                                    margin: EdgeInsets.zero,
+                                    decoration: BoxDecoration(
+                                        borderRadius: const BorderRadius.only(
+                                            topLeft: Radius.circular(10),
+                                            topRight: Radius.circular(10)
+                                        ),
+                                        image: DecorationImage(image: NetworkImage(controller
+                                            .list?[index].course?.image ?? ''),fit: BoxFit.cover)
                                     ),
                                   ),
-                                  VerticalSpacing(height: Dimensions.h_13),
-                                  Row(
-                                    mainAxisAlignment:
-                                    MainAxisAlignment.start,
-                                    crossAxisAlignment:
-                                    CrossAxisAlignment.start,
-                                    children: [
-                                      TutorLmsTextWidget(
-                                          textAlign: TextAlign.start,
-                                          title: controller.list?[index].course?.title ?? '',
-                                          style: AppTextStyle.normalTextStyle(
-                                              FontSize.sp_10,
-                                              AppColor.appColor)),
-                                    ],
+                                  VerticalSpacing(height: Dimensions.h_5),
+                                  Padding(
+                                    padding:  EdgeInsets.only(left: Dimensions.w_10,right: Dimensions.w_10),
+                                    child: TutorLmsTextWidget(
+                                        textOverflow: TextOverflow.clip,
+                                        textAlign: TextAlign.start,
+                                        title: controller.list?[index].course?.title ?? '',
+                                        style: AppTextStyle.normalTextStyle(
+                                            FontSize.sp_10,
+                                            AppColor.appColor)),
                                   ),
                                   VerticalSpacing(height: Dimensions.h_5),
-                                  Flexible(
+                                  Padding(
+                                    padding:  EdgeInsets.only(left: Dimensions.w_10,right: Dimensions.w_10),
                                     child: TutorLmsTextWidget(
-                                        textOverflow: TextOverflow.visible,
+                                        textOverflow: TextOverflow.fade,
                                         textAlign: TextAlign.start,
                                         title: controller.list?[index].course?.shortDesc ?? '',
                                         style: AppTextStyle.normalTextStyle(FontSize.sp_12, Theme.of(context).highlightColor)),
                                   ),
                                   VerticalSpacing(height: Dimensions.h_5),
-                                  Row(
-                                    mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                    crossAxisAlignment:
-                                    CrossAxisAlignment.center,
-                                    children: [
-                                      TutorLmsTextWidget(
-                                          textAlign: TextAlign.start,
-                                          title:
-                                          '${controller.list?[index].course?.videos?.length} lesson',
-                                          style: AppTextStyle.normalTextStyle(
-                                              FontSize.sp_10,
-                                              Theme.of(context).shadowColor)),
-                                      Padding(
-                                        padding: EdgeInsets.only(
-                                            left: Dimensions.w_10),
-                                        child: GestureDetector(
-                                          onTap: () {},
-                                          child: TutorLmsConatiner(
-                                            width: Dimensions.w_20,
-                                            height: Dimensions.h_20,
-                                            decoration: BoxDecoration(
+                                  Padding(
+                                    padding:  EdgeInsets.only(left: Dimensions.w_10,right: Dimensions.w_10),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                      crossAxisAlignment:
+                                      CrossAxisAlignment.center,
+                                      children: [
+                                        TutorLmsTextWidget(
+                                            textAlign: TextAlign.start,
+                                            title:
+                                            '${controller.list?[index].course?.videos?.length} lesson',
+                                            style: AppTextStyle.normalTextStyle(
+                                                FontSize.sp_10,
+                                                Theme.of(context).shadowColor)),
+                                        Padding(
+                                          padding: EdgeInsets.only(
+                                              left: Dimensions.w_10),
+                                          child: GestureDetector(
+                                            onTap: () {},
+                                            child: TutorLmsConatiner(
+                                              width: Dimensions.w_20,
+                                              height: Dimensions.h_20,
+                                              decoration: BoxDecoration(
+                                                  color: Theme.of(context)
+                                                      .shadowColor,
+                                                  shape: BoxShape.circle),
+                                              child: Icon(
+                                                Icons.arrow_forward,
                                                 color: Theme.of(context)
-                                                    .shadowColor,
-                                                shape: BoxShape.circle),
-                                            child: Icon(
-                                              Icons.arrow_forward,
-                                              color: Theme.of(context)
-                                                  .highlightColor,
-                                              size: 12,
+                                                    .highlightColor,
+                                                size: 12,
+                                              ),
                                             ),
                                           ),
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
                                 ],
                               ),
@@ -170,10 +176,11 @@ class _MyLearningState extends State<MyLearning> {
                               fontSize: FontSize.sp_16,color: Theme.of(context).highlightColor
                           ),),
                         ),
-                      )
+                      ),
+                    ],
                   ),
-                ],
-              )
+                )
+            ),
           ),
         );
       },

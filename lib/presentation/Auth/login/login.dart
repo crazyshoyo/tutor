@@ -1,10 +1,10 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tutor_lms/data.datasource/local/local_storage.dart';
 import 'package:tutor_lms/presentation/dashboard/dashboard.dart';
 import 'package:tutor_lms/presentation/tutor_lm_scaffold.dart';
+import 'package:tutor_lms/widgets/common_appbar.dart';
 import 'package:tutor_lms/widgets/tutor_lms_container.dart';
 import 'package:tutor_lms/widgets/tutor_text.dart';
 import 'package:tutor_lms/widgets/tutor_textfield.dart';
@@ -29,14 +29,16 @@ class Login extends StatefulWidget {
 
 class _LoginState extends State<Login> {
   final LoginController _loginPageController = Get.put(LoginController());
+  GlobalKey<FormState> loginKey = GlobalKey<FormState>();
   WebViewPlusController? _controller;
   double _height = Dimensions.h_100;
   bool isVisible = false;
   String? token;
+  bool loading = false;
   
  @override
   void initState() {
-    load();
+    // load();
     super.initState();
   }
 
@@ -63,9 +65,10 @@ class _LoginState extends State<Login> {
                   child: WillPopScope(
                     onWillPop: () async => false,
                     child: TutorLmsScaffold(
-                      isLoading: controller.isLoading,
+                      // appBar: PreferredSize(preferredSize: Size.fromHeight(Dimensions.h_50),
+                      // child: const TutorLmsAppbar()),
                       body: Form(
-                        key: controller.loginKey,
+                        key: loginKey,
                         child:  SingleChildScrollView(
                           child: Column(
                             children: [
@@ -142,13 +145,15 @@ class _LoginState extends State<Login> {
                                                 )),
                                             VerticalSpacing(height: Dimensions.h_15),
                                             TutorLmsTextButton(
+                                              loading: controller.isLoading,
                                               labelName: "Login",
                                               style: AppTextStyle.buttonTextStyle(
                                                   color: AppColor.white),
                                               onTap: () {
-                                                if (controller.loginKey.currentState!.validate()) {
+                                                if (loginKey.currentState!.validate()) {
                                                   setState(() {
                                                     isVisible = true;
+                                                    loading = true;
                                                   });
                                                   }
                                                 },
@@ -159,7 +164,7 @@ class _LoginState extends State<Login> {
                                         )),
                                     VerticalSpacing(height: Dimensions.h_20),
                                     Row(
-                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      mainAxisAlignment: MainAxisAlignment.center,
                                       crossAxisAlignment: CrossAxisAlignment.center,
                                       children: [
                                         TutorLmsTextButton(
@@ -169,9 +174,10 @@ class _LoginState extends State<Login> {
                                               fontSize: FontSize.sp_14,
                                               color: AppColor.white
                                           ),
-                                          labelName: "Don't have an account?",onTap: (){
+                                          labelName: "Don't have an account ?",onTap: (){
                                           Get.toNamed(AppRoutes.loginScreen);
                                         },),
+                                        HorizontalSpacing(width: Dimensions.w_5),
                                         TutorLmsTextButton(
                                           borderRadius: BorderRadius.circular(30),
                                           color: AppColor.transparent,
@@ -184,6 +190,18 @@ class _LoginState extends State<Login> {
                                         },),
                                       ],
                                     ),
+                                    VerticalSpacing(height: Dimensions.h_10),
+                                    GestureDetector(
+                                      onTap: () {
+                                        LocalStorage.writeBool(GetXStorageConstants.skip, true);
+                                         LocalStorage.writeBool(GetXStorageConstants.userLogin, true);
+                                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> DashBoard()));
+                                      },
+                                      child: TutorLmsTextWidget(title: 'Skip', style: AppTextStyle.themeBoldNormalTextStyle(
+                                        fontSize: FontSize.sp_13,
+                                        color: Theme.of(context).highlightColor
+                                      )),
+                                    )
                                   ],
                                 ),
                               ),
@@ -206,7 +224,7 @@ class _LoginState extends State<Login> {
                     child: WebViewPlus(
                       zoomEnabled: true,
                       gestureNavigationEnabled: true,
-                      backgroundColor: Colors.black,
+                      backgroundColor: Colors.transparent,
                       allowsInlineMediaPlayback: true,
                       javascriptMode: JavascriptMode.unrestricted,
                       onWebViewCreated: (controller) {
@@ -224,12 +242,12 @@ class _LoginState extends State<Login> {
                       javascriptChannels: {
                         JavascriptChannel(
                             name: 'Captcha',
-                            onMessageReceived: (JavascriptMessage message) {
+                            onMessageReceived: (JavascriptMessage message) async {
                               setState(() {
                                 token = message.message;
                                 isVisible = false;
                               });
-                              controller.login(context, token.toString());
+                              await controller.login(context, token.toString());
                               print(message.message.toString());
                             })
                       },
@@ -241,6 +259,11 @@ class _LoginState extends State<Login> {
             ],
           );
         });
+  }
+  @override
+  void dispose() {
+    Get.delete<LoginController>();
+    super.dispose();
   }
 }
 

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tutor_lms/approutes.dart';
 import 'package:tutor_lms/data.datasource/remote/models/request/change_password_request.dart';
+import 'package:tutor_lms/presentation/Auth/login/login.dart';
 import '../../constants/constants.dart';
 import '../../core/error/failures.dart';
 import '../../data.datasource/Repository_imp/auth_repository_imp.dart';
@@ -12,11 +13,10 @@ class ChangePasswordController extends GetxController {
   TextEditingController oldPasswordController=TextEditingController();
   TextEditingController newPasswordController=TextEditingController();
   TextEditingController confirmPasswordController=TextEditingController();
-  GlobalKey<FormState> changePasswordKey = GlobalKey<FormState>();
   final AuthRepositoryImpl repositoryImpl = AuthRepositoryImpl();
 
-  onResetButton(BuildContext context) async {
-    if(changePasswordKey.currentState!.validate()) {
+  onResetButton(BuildContext context,GlobalKey<FormState> key) async {
+    if(key.currentState!.validate()) {
      if(newPasswordController.text != confirmPasswordController.text ) {
        ToastUtils.showCustomToast(context, "Confirm password doesn't match", false);
      }else{
@@ -36,7 +36,10 @@ class ChangePasswordController extends GetxController {
          ToastUtils.showCustomToast(context, r.message ?? '', true);
          isLoading = false;
          update([ControllerBuilders.changePasswordController]);
-         Get.toNamed(AppRoutes.loginScreen);
+         oldPasswordController.clear();
+         newPasswordController.clear();
+         confirmPasswordController.clear();
+         Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> const Login()));
        }
        );
        update([ControllerBuilders.changePasswordController]);

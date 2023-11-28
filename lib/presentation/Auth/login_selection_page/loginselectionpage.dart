@@ -47,7 +47,7 @@ class _LoginSelectionPageState extends State<LoginSelectionPage> {
                 top: Dimensions.h_80,
                 child: TutorLmsConatiner(
                 height: Dimensions.h_418,
-                width: Dimensions.deviceWidth,
+                width: Dimensions.defaultWidth,
                 decoration: const BoxDecoration(
                   image: DecorationImage(
                       fit: BoxFit.cover,

@@ -25,6 +25,7 @@ class TradeBitPasswordTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      style: AppTextStyle.normalTextStyle(FontSize.sp_14, Theme.of(context).highlightColor),
       validator: Validator.passwordValidate,
       cursorColor: AppColor.neutral_500,
       autovalidateMode: AutovalidateMode.onUserInteraction,

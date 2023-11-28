@@ -6,14 +6,16 @@ class TutorLmsTextWidget extends StatelessWidget {
   final TextAlign textAlign;
   final TextOverflow textOverflow;
   final int? maxLines;
+  final bool? softWrap;
 
   const TutorLmsTextWidget(
       {Key? key,
       required this.title,
       required this.style,
       this.textAlign = TextAlign.start,
-      this.textOverflow = TextOverflow.ellipsis,
-      this.maxLines})
+      this.textOverflow = TextOverflow.fade,
+      this.maxLines,
+      this.softWrap = false})
       : super(key: key);
 
   @override
@@ -24,6 +26,7 @@ class TutorLmsTextWidget extends StatelessWidget {
       textAlign: textAlign,
       overflow: textOverflow,
       maxLines: maxLines,
+      softWrap: softWrap,
     );
   }
 }

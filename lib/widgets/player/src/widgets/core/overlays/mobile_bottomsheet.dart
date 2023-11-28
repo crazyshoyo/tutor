@@ -252,7 +252,7 @@ class MobileOverlayBottomControlles extends StatelessWidget {
                     podCtr.toggleVideoOverlay();
                   }
                 },
-                child: Icon(
+                child: Icon(color: Theme.of(context).highlightColor,
                   podCtr.isFullScreen
                       ? Icons.fullscreen_exit
                       : Icons.fullscreen,

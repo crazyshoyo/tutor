@@ -19,14 +19,17 @@ class OnBoardingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return  TutorLmsConatiner(
-      decoration: const BoxDecoration(
-        image: DecorationImage(
-          image: AssetImage(Images.onboarding1,),
-        )
-      ),
-      child: TutorLmsScaffold(
-        body: IntroScreen(onBoarding,AppRoutes.loginScreen),
+    return  WillPopScope(
+      onWillPop: () async => false,
+      child: TutorLmsConatiner(
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage(Images.onboarding1,),
+          )
+        ),
+        child: TutorLmsScaffold(
+          body: IntroScreen(onBoarding,AppRoutes.loginScreen),
+        ),
       ),
     );
   }

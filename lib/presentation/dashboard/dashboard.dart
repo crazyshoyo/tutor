@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
+import 'package:tutor_lms/constants/constants.dart';
+import 'package:tutor_lms/data.datasource/local/local_storage.dart';
+import 'package:tutor_lms/presentation/Auth/login/login.dart';
 import 'package:tutor_lms/presentation/tutor_lm_scaffold.dart';
 import 'package:tutor_lms/widgets/tutor_text.dart';
 import '../../constants/appcolor.dart';
@@ -10,16 +13,18 @@ import '../Account/Account.dart';
 import '../CourseDashboard/CourseDashboard.dart';
 import '../Homepage/homepage.dart';
 import '../Search/Search.dart';
+
 class DashBoard extends StatefulWidget {
-    int index;
-    DashBoard({Key? key,this.index = 0,}) : super(key: key);
+    int? index;
+    DashBoard({Key? key,this.index,}) : super(key: key);
 
   @override
   State<DashBoard> createState() => _DashBoardState();
 }
 
-class _DashBoardState extends State<DashBoard> with WidgetsBindingObserver{
+class _DashBoardState extends State<DashBoard> with WidgetsBindingObserver {
   int selectedIndex = 0;
+  List<Widget> pages = [];
 
   onPage(int index) {
     setState(() {
@@ -29,8 +34,14 @@ class _DashBoardState extends State<DashBoard> with WidgetsBindingObserver{
 
   @override
   void initState() {
-    selectedIndex = widget.index ?? 0;
     WidgetsBinding.instance.addObserver(this);
+    selectedIndex = widget.index ?? 0;
+    pages = [
+      const HomePage(),
+      const AllCourse_bottom(),
+      const CourseDashboard(),
+      const Account(),
+    ];
     super.initState();
   }
 
@@ -43,13 +54,15 @@ class _DashBoardState extends State<DashBoard> with WidgetsBindingObserver{
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: ()async => false,
+      onWillPop: () async => false,
       child: TutorLmsScaffold(
-        body:  callPage(selectedIndex),
-        bottomNavigationBar:  SalomonBottomBar(
+        body: LocalStorage.getBool(GetXStorageConstants.userLogin) == true && selectedIndex == 2 ? const Login() : pages[selectedIndex],
+        bottomNavigationBar: LocalStorage.getBool(GetXStorageConstants.userLogin) == true && selectedIndex == 2 ? const SizedBox() : SalomonBottomBar(
           currentIndex: selectedIndex,
           backgroundColor: Theme.of(context).hintColor,
-          onTap: onPage,
+          onTap: (int i) {
+            onPage(i);
+          },
           items: [
           SalomonBottomBarItem(
             activeIcon: SizedBox(
@@ -61,22 +74,9 @@ class _DashBoardState extends State<DashBoard> with WidgetsBindingObserver{
                 width: Dimensions.h_23,
                 child: Image.asset(Images.home)),
             title: TutorLmsTextWidget(title: "Home",style: AppTextStyle.themeBoldNormalTextStyle(
-                fontSize: FontSize.sp_15,color: AppColor.appColor
+                fontSize: FontSize.sp_13,color: AppColor.appColor
             ),),
           ),
-          // SalomonBottomBarItem(
-          //   activeIcon: SizedBox(
-          //       height: Dimensions.h_20,
-          //       width: Dimensions.h_20,
-          //       child: Image.asset(Images.market,color: AppColor.appColor,)),
-          //   icon: SizedBox(
-          //       height: Dimensions.h_25,
-          //       width: Dimensions.h_25,
-          //       child: Image.asset(Images.market)),
-          //   title: TutorLmsTextWidget(title: "Course",style: AppTextStyle.themeBoldNormalTextStyle(
-          //       fontSize: FontSize.sp_15,color: AppColor.appColor
-          //   ),),
-          // ),
           SalomonBottomBarItem(
             activeIcon: SizedBox(
                 height: Dimensions.h_20,
@@ -87,7 +87,7 @@ class _DashBoardState extends State<DashBoard> with WidgetsBindingObserver{
                 width: Dimensions.h_20,
                 child: Image.asset(Images.exchange)),
             title: TutorLmsTextWidget(title: "Courses",style: AppTextStyle.themeBoldNormalTextStyle(
-                fontSize: FontSize.sp_15,color: AppColor.appColor
+                fontSize: FontSize.sp_12,color: AppColor.appColor
             ),),
           ),
           SalomonBottomBarItem(
@@ -100,7 +100,7 @@ class _DashBoardState extends State<DashBoard> with WidgetsBindingObserver{
                 width: Dimensions.h_20,
                 child: Image.asset(Images.wallet)),
             title: TutorLmsTextWidget(title: "Dashboard",style: AppTextStyle.themeBoldNormalTextStyle(
-                fontSize: FontSize.sp_15,color: AppColor.appColor
+                fontSize: FontSize.sp_13,color: AppColor.appColor
             ),),
           ),
           SalomonBottomBarItem(
@@ -116,26 +116,11 @@ class _DashBoardState extends State<DashBoard> with WidgetsBindingObserver{
                     width: Dimensions.h_20,
                     child: Image.asset(Images.user)),
                 title:  TutorLmsTextWidget(title: "Account",style: AppTextStyle.themeBoldNormalTextStyle(
-                  fontSize: FontSize.sp_15,color: Theme.of(context).highlightColor
+                  fontSize: FontSize.sp_13,color: AppColor.appColor
                 ),),
               ),
             ],
           )),
     );
-  }
-}
-
-Widget? callPage(int i) {
-  switch (i) {
-    case 0:
-      return const HomePage();
-    case 1:
-      return const AllCourse_bottom();
-    case 2:
-      return const CourseDashboard();
-    case 3:
-      return const Account();
-    default:
-      return const HomePage();
   }
 }

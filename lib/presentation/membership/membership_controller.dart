@@ -103,6 +103,8 @@ class MemberShipController extends GetxController {
   }
 
 
+
+
   onMemberShip(BuildContext context) async {
     var data = await repositoryImpl.memberShip();
     data.fold((l) {
@@ -266,4 +268,23 @@ class MemberShipController extends GetxController {
       print('$e');
     }
   }
+}
+
+
+class Plan {
+  final String name;
+  final int totalCourses;
+  final double price;
+  final String description;
+  final String currency;
+  final String type;
+
+  Plan({
+    required this.name,
+    required this.totalCourses,
+    required this.price,
+    required this.description,
+    required this.currency,
+    required this.type,
+  });
 }

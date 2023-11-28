@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:tutor_lms/constants/apptextstyle.dart';
 import 'package:tutor_lms/constants/fontsize.dart';
 import 'package:tutor_lms/presentation/Account/my_learning/myleraning.dart';
@@ -11,7 +10,6 @@ import 'package:tutor_lms/presentation/change_password/change_password.dart';
 import 'package:tutor_lms/presentation/membership/membershipplan.dart';
 import 'package:tutor_lms/widgets/spacing.dart';
 import 'package:tutor_lms/widgets/tutor_text.dart';
-import '../../constants/appcolor.dart';
 import '../../constants/constants.dart';
 import '../../constants/images.dart';
 import '../../data.datasource/local/local_storage.dart';
@@ -52,13 +50,15 @@ class _AccountState extends State<Account> {
                 children: [
                   ListTile(
                     onTap: (){
-                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> const Profile()));
+                       LocalStorage.getBool(GetXStorageConstants.userLogin) == true ?
+                       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> const Login()))
+                           : Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> const Profile()));
                     },
                     trailing: Icon(Icons.arrow_forward_ios_rounded,
                       color: Theme.of(context).shadowColor,size: 15,),
                     leading: Image.asset(Images.instructor,scale: 1,),
                     title: TutorLmsTextWidget(title: controller.user?.firstName ?? 'Hello',style: AppTextStyle.normalTextStyle(FontSize.sp_14, Theme.of(context).highlightColor),),
-                    subtitle: TutorLmsTextWidget(title: controller.user?.email ?? 'user',style: AppTextStyle.normalTextStyle(FontSize.sp_11, Theme.of(context).shadowColor),),
+                    subtitle: TutorLmsTextWidget(title: controller.user?.email ?? 'User',style: AppTextStyle.normalTextStyle(FontSize.sp_12, Theme.of(context).shadowColor),),
                   ),
                   VerticalSpacing(height: Dimensions.h_10),
                   Divider(
@@ -66,7 +66,7 @@ class _AccountState extends State<Account> {
                   ),
                   ListTile(
                     onTap: (){
-                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> const MyLearning()));
+                      LocalStorage.getBool(GetXStorageConstants.userLogin) == true ? Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> const Login())) : Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> const MyLearning()));
                     },
                     leading:Padding(
                       padding:  EdgeInsets.only(top: Dimensions.h_8),
@@ -79,6 +79,7 @@ class _AccountState extends State<Account> {
                   ),
                   ListTile(
                     onTap: (){
+                      LocalStorage.getBool(GetXStorageConstants.userLogin) == true ? Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> const Login())) :
                       Navigator.pushReplacement(context, MaterialPageRoute(builder: (_)=>const PurchaseHistory()));
                     },
                     leading:Padding(
@@ -96,7 +97,7 @@ class _AccountState extends State<Account> {
                     },
                     leading:Padding(
                       padding:  EdgeInsets.only(top: Dimensions.h_8),
-                      child: Icon(Icons.add),
+                      child: const Icon(Icons.add),
                     ),
                     trailing: Icon(Icons.arrow_forward_ios_rounded,
                       color: Theme.of(context).shadowColor,size: 15,),
@@ -106,7 +107,8 @@ class _AccountState extends State<Account> {
                   ListTile(
                     onTap: (){
                       LocalStorage.writeBool(GetXStorageConstants.exchangeFromHome, true);
-                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>TutorNotification()));
+                      LocalStorage.getBool(GetXStorageConstants.userLogin) == true ? Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> const Login()))
+                          : Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>const TutorNotification()));
                     },
                     leading:Padding(
                       padding:  EdgeInsets.only(top: Dimensions.h_8),
@@ -115,10 +117,10 @@ class _AccountState extends State<Account> {
                     trailing: Icon(Icons.arrow_forward_ios_rounded,
                       color: Theme.of(context).shadowColor,size: 15,),
                     title: TutorLmsTextWidget(title: 'Notifications',style: AppTextStyle.normalTextStyle(FontSize.sp_14, Theme.of(context).highlightColor)),
-                    subtitle: TutorLmsTextWidget(title: 'Message, group & call tones',style: AppTextStyle.normalTextStyle(FontSize.sp_12, Theme.of(context).shadowColor),),
                   ),ListTile(
                     onTap: (){
-                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (_)=>ChangePassword()));
+                      LocalStorage.getBool(GetXStorageConstants.userLogin) == true ? Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> const Login())) :
+                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (_)=>const ChangePassword()));
                     },
                     leading:Padding(
                       padding:  EdgeInsets.only(top: Dimensions.h_8),
@@ -129,34 +131,35 @@ class _AccountState extends State<Account> {
                     title: TutorLmsTextWidget(title: 'Change Password',style: AppTextStyle.normalTextStyle(FontSize.sp_14, Theme.of(context).highlightColor)),
                     subtitle: TutorLmsTextWidget(title: 'Forgot your password? No Problem',style: AppTextStyle.normalTextStyle(FontSize.sp_12, Theme.of(context).shadowColor),),
                   ),
-                  ListTile(
-                     title: TutorLmsTextWidget(
-                          title: LocalStorage.getBool(GetXStorageConstants.day) == true ? "Light Mode" : "Dark Mode",
-                          style: AppTextStyle.normalTextStyle(
-                              FontSize.sp_16, Theme.of(context).highlightColor),),
-                  leading: Icon(LocalStorage.getBool(GetXStorageConstants.day) == true ? Icons.light_mode:Icons.dark_mode,color: Theme.of(context).shadowColor,),
-                  trailing:  Transform.scale(
-                    alignment: Alignment.centerRight,
-                    scale: 0.8,
-                    child: CupertinoSwitch(
-                      value: LocalStorage.getBool(GetXStorageConstants.day),
-                      onChanged: (value){
-                        setState(() {
-                          LocalStorage().changeTheme();
-                          LocalStorage.writeBool(GetXStorageConstants.day,value);
-                        },
-                        );
+              //     ListTile(
+              //        title: TutorLmsTextWidget(
+              //             title: LocalStorage.getBool(GetXStorageConstants.day) == true ? "Light Mode" : "Dark Mode",
+              //             style: AppTextStyle.normalTextStyle(
+              //                 FontSize.sp_16, Theme.of(context).highlightColor)),
+              //     leading: Icon(LocalStorage.getBool(GetXStorageConstants.day) == true ? Icons.light_mode:Icons.dark_mode,color: Theme.of(context).shadowColor,),
+              //     trailing:  Transform.scale(
+              //       alignment: Alignment.centerRight,
+              //       scale: 0.8,
+              //       child: CupertinoSwitch(
+              //         value: LocalStorage.getBool(GetXStorageConstants.day),
+              //         onChanged: (value){
+              //           setState(() {
+              //             LocalStorage().changeTheme();
+              //             LocalStorage.writeBool(GetXStorageConstants.day,value);
+              //           },
+              //           );
+              //         },
+              //         thumbColor: AppColor.appColor,
+              //         activeColor: AppColor.appColor,
+              //       ),
+              //     ),
+              // ),
+                  LocalStorage.getBool(GetXStorageConstants.userLogin) == true ? SizedBox.shrink() : ListTile(
+                    onTap: ()async {
+                      await Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> const Login()));
+                      LocalStorage.clearValueByKey(GetXStorageConstants.authToken);
+                      LocalStorage.writeBool(GetXStorageConstants.userLogin, true);
                       },
-                      thumbColor: AppColor.appColor,
-                      activeColor: AppColor.appColor,
-                    ),
-                  ),
-              ),
-                  ListTile(
-                    onTap: ()async{
-                      LocalStorage.clear();
-                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> const Login()));
-                    },
                     leading: Icon(Icons.logout,color: Theme.of(context).shadowColor,),
                     trailing: Icon(Icons.arrow_forward_ios_rounded,
                       color: Theme.of(context).shadowColor,size: 15,),
@@ -164,10 +167,9 @@ class _AccountState extends State<Account> {
 
                   ),
                   ListTile(
-                    onTap: ()async{
+                    onTap: (){
                       Navigator.pushReplacement(context, MaterialPageRoute(builder: (_)=>const frequent()));
-
-                    },
+                      },
                     leading:Padding(
                       padding:  EdgeInsets.only(top: Dimensions.h_8),
                       child: Image.asset(Images.google,scale: 1.5,),

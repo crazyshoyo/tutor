@@ -13,7 +13,9 @@ class Logging extends Interceptor {
       print('QUERY PARAMETER -:> ${options.queryParameters}');
       log('REQUEST-:> ${options.data}');
     }
-    options.headers['Authorization']= LocalStorage.getAuthToken();
+    if(LocalStorage.getAuthToken().isNotEmpty) {
+      options.headers['Authorization']= LocalStorage.getAuthToken();
+    }
 
     log('HEADERS -:> ${options.headers}');
     return super.onRequest(options, handler);

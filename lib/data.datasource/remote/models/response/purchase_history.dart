@@ -1,109 +1,97 @@
-// To parse this JSON data, do
-//
-//     final purchaseHistoryFromJson = purchaseHistoryFromJsonFromJson(jsonString);
+
 
 import 'dart:convert';
 
-PurchaseHistoryFromJson purchaseHistoryFromJsonFromJson(String str) => PurchaseHistoryFromJson.fromJson(json.decode(str));
+PurchaseHistory purchaseHistoryFromJson(String str) => PurchaseHistory.fromJson(json.decode(str));
 
-String purchaseHistoryFromJsonToJson(PurchaseHistoryFromJson data) => json.encode(data.toJson());
 
-class PurchaseHistoryFromJson {
-  List<Enrolment> enrolments;
+class PurchaseHistory {
+  List<Enrolment>? enrolments;
 
-  PurchaseHistoryFromJson({
-     required this.enrolments,
+  PurchaseHistory({
+    this.enrolments,
   });
 
-  factory PurchaseHistoryFromJson.fromJson(Map<String, dynamic> json) => PurchaseHistoryFromJson(
-    enrolments: List<Enrolment>.from(json["enrolments"].map((x) => Enrolment.fromJson(x))),
+  factory PurchaseHistory.fromJson(Map<String, dynamic> json) => PurchaseHistory(
+    enrolments: json["enrolments"] == null ? [] : List<Enrolment>.from(json["enrolments"]!.map((x) => Enrolment.fromJson(x))),
   );
 
-  Map<String, dynamic> toJson() => {
-    "enrolments": List<dynamic>.from(enrolments.map((x) => x.toJson())),
-  };
 }
 
 class Enrolment {
-  int id;
-  int userId;
-  int packageId;
-  String boughtPrice;
+  int? id;
+  String? orderId;
+  int? userId;
+  int? packageId;
+  String? boughtPrice;
+  int? attachedId;
   String? paymentMethod;
-  int status;
-  dynamic stPayStatus;
-  dynamic reason;
-  DateTime expiredAt;
-  DateTime createdAt;
-  DateTime updatedAt;
-  Package package;
+  int? status;
+  String? stPayStatus;
+  String? reason;
+  String? clientResponse;
+  DateTime? expiredAt;
+  DateTime? createdAt;
+  DateTime? updatedAt;
+  Package? package;
 
   Enrolment({
-    required this.id,
-    required this.userId,
-    required this.packageId,
-    required this.boughtPrice,
-    required this.paymentMethod,
-    required this.status,
-    required this.stPayStatus,
-    required this.reason,
-    required this.expiredAt,
-    required this.createdAt,
-    required this.updatedAt,
-    required this.package,
+    this.id,
+    this.orderId,
+    this.userId,
+    this.packageId,
+    this.boughtPrice,
+    this.attachedId,
+    this.paymentMethod,
+    this.status,
+    this.stPayStatus,
+    this.reason,
+    this.clientResponse,
+    this.expiredAt,
+    this.createdAt,
+    this.updatedAt,
+    this.package,
   });
 
   factory Enrolment.fromJson(Map<String, dynamic> json) => Enrolment(
     id: json["id"],
+    orderId: json["order_id"],
     userId: json["user_id"],
     packageId: json["package_id"],
     boughtPrice: json["bought_price"],
+    attachedId: json["attached_id"],
     paymentMethod: json["payment_method"],
     status: json["status"],
     stPayStatus: json["st_pay_status"],
     reason: json["reason"],
-    expiredAt: DateTime.parse(json["expired_at"]),
-    createdAt: DateTime.parse(json["created_at"]),
-    updatedAt: DateTime.parse(json["updated_at"]),
-    package: Package.fromJson(json["package"]),
+    clientResponse: json["client_response"],
+    expiredAt: json["expired_at"] == null ? null : DateTime.parse(json["expired_at"]),
+    createdAt: json["created_at"] == null ? null : DateTime.parse(json["created_at"]),
+    updatedAt: json["updated_at"] == null ? null : DateTime.parse(json["updated_at"]),
+    package: json["package"] == null ? null : Package.fromJson(json["package"]),
   );
 
-  Map<String, dynamic> toJson() => {
-    "id": id,
-    "user_id": userId,
-    "package_id": packageId,
-    "bought_price": boughtPrice,
-    "payment_method": paymentMethod,
-    "status": status,
-    "st_pay_status": stPayStatus,
-    "reason": reason,
-    "expired_at": expiredAt.toIso8601String(),
-    "created_at": createdAt.toIso8601String(),
-    "updated_at": updatedAt.toIso8601String(),
-    "package": package.toJson(),
-  };
 }
 
 class Package {
-  String name;
-  String price;
-  String description;
+  String? name;
+  String? price;
+  String? description;
+  String? type;
 
   Package({
-    required this.name,
-    required this.price,
-    required this.description,
+    this.name,
+    this.price,
+    this.description,
+    this.type,
   });
 
   factory Package.fromJson(Map<String, dynamic> json) => Package(
     name: json["name"],
     price: json["price"],
     description: json["description"],
+    type: json["type"],
   );
 
-  Map<String, dynamic> toJson() => {
-    "name": name,
-    "price": price,
-    "description": description,
-  };
 }
+

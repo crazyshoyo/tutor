@@ -5,12 +5,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:tutor_lms/constants/fontsize.dart';
 import 'package:tutor_lms/presentation/getx/appPages.dart';
 import 'approutes.dart';
 import 'constants/Theme.dart';
 import 'data.datasource/local/local_storage.dart';
 import 'data.datasource/remote/services/dio/dio.dart';
-
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -34,6 +34,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
+      designSize:  const Size(Dimensions.defaultWidth, Dimensions.defaultHeight),
+      minTextAdapt: true,
+      ensureScreenSize: true,
+      useInheritedMediaQuery: true,
       builder: (BuildContext context, Widget? child) {
         return GetMaterialApp(
           debugShowCheckedModeBanner: false,

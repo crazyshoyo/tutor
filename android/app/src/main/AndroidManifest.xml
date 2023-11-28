@@ -6,6 +6,7 @@
         </intent>
     </queries>
     <application
+        android:allowBackup="false"
         android:usesCleartextTraffic="true"
         android:label="Tutor LMS"
         android:name="${applicationName}"
@@ -37,6 +38,7 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+
 
     </application>
     <uses-permission android:name="android.permission.INTERNET"/>

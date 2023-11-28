@@ -21,7 +21,7 @@ class RestClient implements BaseService {
         if (e.response?.statusCode == 401) {
           throw Dio.LogoutException('');
         } else {
-          Map<String, dynamic> errorResponse = jsonDecode(e.response?.data);
+          Map<String, dynamic> errorResponse = jsonDecode(e.response?.data) == null ? null : jsonDecode(e.response?.data);
           final String message = errorResponse['message'];
           throw Dio.DioException(message);
         }
@@ -45,13 +45,25 @@ class RestClient implements BaseService {
     } catch (e) {
       if (e is DioError) {
         if(e.response?.statusCode == 308) {
-          url = e.response?.headers['location']?[0] ?? '';
-          final response = await dioInstance.getNetworkClient.post(
-              Apis.baseUrl + url,
-              data: request,
-              queryParameters: params
-          );
-          return response.data;
+          try {
+            url = e.response?.headers['location']?[0] ?? '';
+            final response = await dioInstance.getNetworkClient.post(
+                Apis.baseUrl + url,
+                data: request,
+                queryParameters: params
+            );
+            return response.data;
+          } catch (e) {
+            if(e is DioError) {
+              print("this is wokring");
+              if(e.response?.statusCode == 400) {
+                Map<String, dynamic> errorResponse = jsonDecode(e.response?.data);
+                final String message = errorResponse['message'];
+                throw Dio.DioException(message);
+              }
+            }
+          }
+
         }
         if(e.response?.statusCode == 400) {
           print('Working');
@@ -84,22 +96,24 @@ class RestClient implements BaseService {
     } catch (e) {
       if (e is DioError) {
         if(e.response?.statusCode == 308) {
-          url = e.response?.headers['location']?[0] ?? '';
-          final response = await dioInstance.getNetworkClient.put(
-              Apis.baseUrl + url,
-              data: request,
-              queryParameters: params
-          );
-          return response.data;
-        }
-        if(e.response?.statusCode == 308) {
-          url = e.response?.headers['location']?[1] ?? '';
-          final response = await dioInstance.getNetworkClient.put(
-              Apis.baseUrl + url,
-              data: request,
-              queryParameters: params
-          );
-          return response.data;
+          try {
+            url = e.response?.headers['location']?[0] ?? '';
+            final response = await dioInstance.getNetworkClient.put(
+                Apis.baseUrl + url,
+                data: request,
+                queryParameters: params
+            );
+            return response.data;
+          } catch (e) {
+            if(e is DioError) {
+              if(e.response?.statusCode == 400) {
+                Map<String, dynamic> errorResponse = jsonDecode(e.response?.data);
+                final String message = errorResponse['message'];
+                throw Dio.DioException(message);
+              }
+            }
+          }
+
         }
         if (e.response?.statusCode == 401) {
           throw Dio.LogoutException('');

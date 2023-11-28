@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:tutor_lms/data.datasource/remote/services/apis.dart';
-import 'package:tutor_lms/presentation/Auth/login/login.dart';
 import 'package:tutor_lms/presentation/dashboard/dashboard.dart';
 import 'package:tutor_lms/presentation/onboardingScreen/onboradingScreen.dart';
 import 'package:tutor_lms/presentation/tutor_lm_scaffold.dart';
@@ -26,36 +25,46 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   _loadWidget() async {
+    await checkLogin();
     var duration = const Duration(seconds: 3);
     return Timer(duration,(){
-      LocalStorage.getBool(GetXStorageConstants.onBoarding) == true ? Navigator.push(context, MaterialPageRoute(builder: (context)=>const Login())) :
-      Navigator.push(context, MaterialPageRoute(builder: (context)=> OnBoardingScreen()));
+      LocalStorage.getBool(GetXStorageConstants.onBoarding) == true ? Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>  DashBoard())) :
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> OnBoardingScreen()));
     });
   }
 
   checkLogin() async {
+    print('wwwwwwwwwwwwwwwwwwwwwwww');
     final client = Dio();
     try{
-      final res = await client.get(Apis.userProfile,options: Options(headers:{"Authorization":"Bearer ${LocalStorage.getAuthToken()}"},));
-      print(res.data);
-      if(res.statusCode == 401) {
-      }
+      final res = await client.get(Apis.dashboardapi,options: Options(headers:{"Authorization":"${LocalStorage.getAuthToken()}"},));
+     if(res.statusCode == 200 ) {
+       LocalStorage.writeBool(GetXStorageConstants.userLogin, false);
+     }
+
     }  catch (e) {
-      if (e is DioError && e.response?.statusCode == 401) {
-        if (e.response?.data["message"] == 'Unauthenticated') {
+      if (e is DioError && e.response?.statusCode == 400) {
+        if (e.response?.data["message"] == 'jwt must be provided') {
           print(e.response?.data["message"]);
           LocalStorage.writeBool(GetXStorageConstants.userLogin, true);
-        }}}}
+        }
+        if(e.response?.data['message'] == 'jwt expired') {
+          LocalStorage.writeBool(GetXStorageConstants.jwtExpired, true);
+        }
+  }}}
 
   @override
   Widget build(BuildContext context) {
-    return const TutorLmsScaffold(
-      body: TutorLmsConatiner(
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            fit: BoxFit.cover,
-            image: AssetImage(Images.splash),
-          )
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: const TutorLmsScaffold(
+        body: TutorLmsConatiner(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              fit: BoxFit.cover,
+              image: AssetImage(Images.splash),
+            )
+          ),
         ),
       ),
     );

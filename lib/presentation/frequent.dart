@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:tutor_lms/presentation/dashboard/dashboard.dart';
+import 'package:tutor_lms/widgets/common_appbar.dart';
 import 'package:tutor_lms/widgets/tutor_lms_container.dart';
 import 'package:tutor_lms/widgets/tutor_text.dart';
 import '../../constants/apptextstyle.dart';
@@ -34,65 +35,58 @@ class _frequentState extends State<frequent> {
       ),
           child: SafeArea(
             child: Scaffold(
+              appBar: PreferredSize(preferredSize: Size.fromHeight(Dimensions.h_50),
+                  child:  TutorLmsAppbar(title: 'Frequently Asked Questions',onTap: ()=> Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> DashBoard(index: 3))))),
                 body: Padding(
-                  padding:  EdgeInsets.only(left: Dimensions.w_20,right: Dimensions.w_20),
+                  padding:  EdgeInsets.only(left: Dimensions.w_10,right: Dimensions.w_10),
                   child: SingleChildScrollView(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        VerticalSpacing(height: Dimensions.h_20),
-                        ListTile(
-                          onTap: (){
-                            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>DashBoard(index: 3)));
-                          },
-                          leading: Icon(Icons.arrow_back,color: Theme.of(context).shadowColor,),
-                          title: TutorLmsTextWidget(title: 'Frequently Asked Questions', style: AppTextStyle.normalTextStyle(FontSize.sp_18, Theme.of(context).highlightColor)),
-                        ),
                         VerticalSpacing(height: Dimensions.h_30),
-                        SingleChildScrollView(
-                          child: SizedBox(
-                            height: Dimensions.h_840,
-                              width: double.infinity,
-                              child:ListView.builder(
-                                itemCount: element.length,
-                                itemBuilder: (context, index) {
-                                  if(element.isEmpty ){
-                                    return Center(
-                                      child: TutorLmsTextWidget(
-                                        title: 'No data found', style: AppTextStyle.normalTextStyle(FontSize.sp_16, Theme.of(context).highlightColor),
-                                      ) );
-                                  }
-                                  else{
-                                    return Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: <Widget>[
-                                        ExpansionTile(
-                                          title: TutorLmsTextWidget(
-                                            title:  '${element[index].heading}',
-                                            style: AppTextStyle.themeBoldTextStyle(color: Theme.of(context).highlightColor,fontSize: FontSize.sp_14)
-                                          ),
-                                          initiallyExpanded: _isExpanded,
-                                          onExpansionChanged: (bool expanding) {
-                                            setState(() {
-                                              _isExpanded = expanding ;
-                                            });
-                                          },
-                                          children: <Widget>[
-                                            ListTile(
-                                              title: TutorLmsTextWidget(
-                                                maxLines: 10,
-                                                title: '${element[index].content}',
-                                                style: AppTextStyle.normalTextStyle(FontSize.sp_16, Theme.of(context).shadowColor),
-                                              ),
-                                            ),
-                                          ],
+                        ListView.builder(
+                          shrinkWrap: true,
+                          physics: NeverScrollableScrollPhysics(),
+                          itemCount: element.length,
+                          itemBuilder: (context, index) {
+                            if(element.isEmpty ){
+                              return Center(
+                                child: TutorLmsTextWidget(
+                                  title: 'No data found', style: AppTextStyle.normalTextStyle(FontSize.sp_16, Theme.of(context).highlightColor),
+                                ) );
+                            }
+                            else{
+                              return Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                  ExpansionTile(
+                                    collapsedIconColor: Theme.of(context).highlightColor,
+                                    iconColor: Theme.of(context).highlightColor,
+                                    title: TutorLmsTextWidget(
+                                      title:  '${element[index].heading}',
+                                      style: AppTextStyle.themeBoldTextStyle(color: Theme.of(context).highlightColor,fontSize: FontSize.sp_14)
+                                    ),
+                                    initiallyExpanded: _isExpanded,
+                                    onExpansionChanged: (bool expanding) {
+                                      setState(() {
+                                        _isExpanded = expanding ;
+                                      });
+                                    },
+                                    children: <Widget>[
+                                      ListTile(
+                                        title: TutorLmsTextWidget(
+                                          softWrap: true,
+                                          maxLines: 10,
+                                          title: '${element[index].content}',
+                                          style: AppTextStyle.normalTextStyle(FontSize.sp_16, Theme.of(context).shadowColor),
                                         ),
-                                      ],
-                                    );
-                                  }
-                                },
-                              )
-                          ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              );
+                            }
+                          },
                         ),
 
                       ],

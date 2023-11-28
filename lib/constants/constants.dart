@@ -11,18 +11,19 @@ class Constants {
 
 class GetXStorageConstants {
   static const authToken = "Authorization";
+  static const skip = "Skip";
   static const darkTheme = "DarkTheme";
   static const profileStatus = "ProfileStatus";
   static const userEmail = 'UserEmail';
   static const userMobile = 'UserMobile';
   static const userProfile = 'userProfile';
-  static const userKycStatus = 'userKycStatus';
+  static const enroll = 'enroll';
   static const userName = 'userName';
   static const user = 'user';
   static const onBoarding = 'onBoarding';
   static const isLogin = 'isLogin';
   static const userLogin = 'userLogin';
-  static const day = 'day';
+  static const jwtExpired = 'jwtExpired';
   static const loginFromHome = 'loginFromHome';
   static const stakingDeposit = 'stakingDeposit';
   static const searchFromHome = 'searchFromHome';

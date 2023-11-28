@@ -81,6 +81,7 @@ class RegisterController extends GetxController {
     }, (r) {
       isLoading=false;
       ToastUtils.showCustomToast(context, r.message ?? '', true);
+      LocalStorage.writeBool(GetXStorageConstants.userLogin, false);
       LocalStorage.setAuthToken(r.elarnivUsersToken);
       update([ControllerBuilders.registerController]);
       Get.toNamed(AppRoutes.dashBoard);

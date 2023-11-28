@@ -5,6 +5,7 @@ import 'package:http/http.dart';
 import 'package:tutor_lms/data.datasource/remote/models/response/all_course.dart';
 import 'package:tutor_lms/presentation/dashboard/dashboard.dart';
 import 'package:tutor_lms/widgets/common_appbar.dart';
+import 'package:tutor_lms/widgets/ozstaff_loader.dart';
 import '../../constants/appcolor.dart';
 import '../../constants/apptextstyle.dart';
 import '../../constants/fontsize.dart';
@@ -28,6 +29,8 @@ class _AllCourse_bottomState extends State<AllCourse_bottom> {
   late bool isLastPage;
   late int pageNumber;
   late bool error;
+  bool hasData = true;
+  bool pageLoading = false;
   late int numberOfPostsPerRequest;
   List<Course> allCourse = [];
   @override
@@ -36,21 +39,37 @@ class _AllCourse_bottomState extends State<AllCourse_bottom> {
     isLastPage = false;
     loading = true;
     error = false;
-    numberOfPostsPerRequest = 12;
+    numberOfPostsPerRequest = 10;
     scrollController = ScrollController();
+    scrollController.addListener(_scrollListener);
     fetchData();
     super.initState();
   }
 
+  void _scrollListener() {
+    if (scrollController.offset == scrollController.position.maxScrollExtent &&
+        !scrollController.position.outOfRange) {
+      pageNumber++;
+      fetchData();
+    }
+  }
 
   Future<void> fetchData() async {
+    setState(() {
+      pageLoading = true;
+
+    });
     try {
       final response = await get(Uri.parse("${Apis.baseUrl}/api/all-courses/?page=$pageNumber&limit=$numberOfPostsPerRequest"));
       var responseList = allCourseResponseFromJson(response.body);
+      if(allCourse.length< numberOfPostsPerRequest) {
+        setState(() {
+          hasData = false;
+        });
+      }
       setState(() {
-        isLastPage = allCourse.length < numberOfPostsPerRequest;
-        loading = false;
-        pageNumber = pageNumber + 1;
+          loading = false;
+          pageLoading = false;
         allCourse.addAll(responseList.courses ?? []);
       });
     } catch (e) {
@@ -64,134 +83,153 @@ class _AllCourse_bottomState extends State<AllCourse_bottom> {
 
   @override
   Widget build(BuildContext context) {
-    scrollController.addListener(() {
-      var nextPageTrigger = 0.6 * scrollController.position.maxScrollExtent;
-      if (scrollController.position.pixels > nextPageTrigger) {
-        loading = true;
-        fetchData();
-      }
-    });
-    return SafeArea(
-      top: true,
-      child: Scaffold(
-          appBar: PreferredSize(preferredSize: Size.fromHeight(Dimensions.h_50), child: TutorLmsAppbar(title: "All Courses",onTap: () {
-            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> DashBoard(index: 0)));
-          },)),
-          body: loading ? Center(child: CupertinoActivityIndicator()): GridView.builder(
-            controller: scrollController,
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              childAspectRatio: 2/2.8,
-              crossAxisSpacing: 5,
-              mainAxisSpacing: 15,
-              crossAxisCount: 2,
-            ),
-            itemCount: allCourse.length + (isLastPage ? 0 : 1),
-            itemBuilder: (context, index) {
-              if (index == allCourse.length) {
-                if (error) {
-                  return Center(
-                      child: Text("Error")
-                  );
-                }
-              }
-              return SizedBox(
-                  height: Dimensions.h_230,
-                  child: GestureDetector(
-                    onTap: () => Navigator.pushReplacement(
-                        context, MaterialPageRoute(
-                        builder: (context) => CourseTutor(
-                            slug: allCourse[index].slug ?? ''))),
-                    child: TutorLmsConatiner(
-                      width: Dimensions.w_185,
-                      padding: EdgeInsets.only(top: Dimensions.h_10,bottom: Dimensions.h_10,left: Dimensions.w_12,right: Dimensions.w_12),
-                      margin: EdgeInsets.only(
-                        right: Dimensions.w_10,
-                      ),
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          color: Theme.of(context).cardColor),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SizedBox(
-                            height: Dimensions.h_120,
-                            width: Dimensions.w_160,
-                            child: ClipRRect(
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: SafeArea(
+        top: true,
+        child: Scaffold(
+            appBar: PreferredSize(preferredSize: Size.fromHeight(Dimensions.h_50), child:  const TutorLmsAppbar(title: "Courses",
+              hideBack: true,)),
+            body: loading ? const Center(child: TutorActivityIndicator()): Padding(
+              padding:  EdgeInsets.only(top: Dimensions.h_15),
+              child: GridView.builder(
+                controller: scrollController,
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  childAspectRatio: 2/2.3,
+                  crossAxisSpacing: 2,
+                  mainAxisSpacing: 20,
+                  crossAxisCount: 2,
+                ),
+                itemCount: allCourse.length + 1,
+                itemBuilder: (context, index) {
+                  if(index<allCourse.length) {
+                    return Padding(
+                      padding:  EdgeInsets.only(left: Dimensions.w_10),
+                      child: GestureDetector(
+                        onTap: () => Navigator.pushReplacement(
+                            context, MaterialPageRoute(
+                            builder: (context) => CourseTutor(slug: allCourse[index].slug ?? '', id: allCourse[index].courseId ?? 0,))),
+                        child: TutorLmsConatiner(
+                          width: Dimensions.w_185,
+                          margin: EdgeInsets.only(
+                            right: Dimensions.w_10,
+                          ),
+                          decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(10),
-                              child: TlCachedNetworkImage(
-                                imageUrl: allCourse[index].image ?? '',
-                              ),
-                            ),
-                          ),
-                          VerticalSpacing(height: Dimensions.h_13),
-                          Row(
-                            mainAxisAlignment:
-                            MainAxisAlignment.start,
-                            crossAxisAlignment:
-                            CrossAxisAlignment.start,
+                              color: Theme.of(context).cardColor),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              TutorLmsTextWidget(
-                                  textAlign: TextAlign.start,
-                                  title: allCourse[index]
-                                      .category?.name ?? '',
-                                  style: AppTextStyle.normalTextStyle(
-                                      FontSize.sp_10,
-                                      AppColor.appColor)),
-                            ],
-                          ),
-                          VerticalSpacing(height: Dimensions.h_5),
-                          Flexible(
-                            child: TutorLmsTextWidget(
-                                textOverflow: TextOverflow.visible,
-                                textAlign: TextAlign.start,
-                                title: allCourse[index].title ?? '',
-                                style: AppTextStyle.normalTextStyle(FontSize.sp_12, Theme.of(context).highlightColor)),
-                          ),
-                          VerticalSpacing(height: Dimensions.h_5),
-                          Row(
-                            mainAxisAlignment:
-                            MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment:
-                            CrossAxisAlignment.center,
-                            children: [
-                              TutorLmsTextWidget(
-                                  textAlign: TextAlign.start,
-                                  title:
-                                  '${allCourse[index].videos?.length.toString()} lesson',
-                                  style: AppTextStyle.normalTextStyle(
-                                      FontSize.sp_10,
-                                      Theme.of(context).shadowColor)),
-                              Padding(
-                                padding: EdgeInsets.only(
-                                    left: Dimensions.w_10),
-                                child: GestureDetector(
-                                  onTap: () {},
-                                  child: TutorLmsConatiner(
-                                    width: Dimensions.w_20,
-                                    height: Dimensions.h_20,
-                                    decoration: BoxDecoration(
-                                        color: Theme.of(context)
-                                            .shadowColor,
-                                        shape: BoxShape.circle),
-                                    child: Icon(
-                                      Icons.arrow_forward,
-                                      color: Theme.of(context)
-                                          .highlightColor,
-                                      size: 12,
+                              Container(
+                                padding: EdgeInsets.zero,
+                                height: Dimensions.h_100,
+                                margin: EdgeInsets.zero,
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.only(
+                                        topLeft: Radius.circular(10),
+                                        topRight: Radius.circular(10)
                                     ),
-                                  ),
+                                    image: DecorationImage(image: NetworkImage(allCourse[index].image ?? ''),fit: BoxFit.cover)
+                                ),
+                              ),
+                              VerticalSpacing(height: Dimensions.h_13),
+                              Padding(
+                                padding:  EdgeInsets.only(left: Dimensions.w_10,right: Dimensions.w_10),
+                                child: Row(
+                                  mainAxisAlignment:
+                                  MainAxisAlignment.start,
+                                  crossAxisAlignment:
+                                  CrossAxisAlignment.start,
+                                  children: [
+                                    TutorLmsTextWidget(
+                                        textAlign: TextAlign.start,
+                                        title: allCourse[index]
+                                            .category?.name ?? '',
+                                        style: AppTextStyle.normalTextStyle(
+                                            FontSize.sp_10,
+                                            AppColor.appColor)),
+                                  ],
+                                ),
+                              ),
+                              VerticalSpacing(height: Dimensions.h_5),
+                              Padding(
+                                padding:  EdgeInsets.only(left: Dimensions.w_10,right: Dimensions.w_10),
+                                child: TutorLmsTextWidget(
+                                    textOverflow: TextOverflow.clip,
+                                    textAlign: TextAlign.start,
+                                    title: allCourse[index].title ?? '',
+                                    style: AppTextStyle.normalTextStyle(FontSize.sp_12, Theme.of(context).highlightColor)),
+                              ),
+                              VerticalSpacing(height: Dimensions.h_5),
+                              Padding(
+                                padding:  EdgeInsets.only(left: Dimensions.w_10,right: Dimensions.w_10),
+                                child: Row(
+                                  mainAxisAlignment:
+                                  MainAxisAlignment.spaceBetween,
+                                  crossAxisAlignment:
+                                  CrossAxisAlignment.center,
+                                  children: [
+                                    TutorLmsTextWidget(
+                                        textAlign: TextAlign.start,
+                                        title:
+                                        '${allCourse[index].videos?.length.toString()} lesson',
+                                        style: AppTextStyle.normalTextStyle(
+                                            FontSize.sp_10,
+                                            Theme.of(context).shadowColor)),
+                                    Padding(
+                                      padding: EdgeInsets.only(
+                                          left: Dimensions.w_10),
+                                      child: GestureDetector(
+                                        onTap: () {},
+                                        child: TutorLmsConatiner(
+                                          width: Dimensions.w_20,
+                                          height: Dimensions.h_20,
+                                          decoration: BoxDecoration(
+                                              color: Theme.of(context)
+                                                  .shadowColor,
+                                              shape: BoxShape.circle),
+                                          child: Icon(
+                                            Icons.arrow_forward,
+                                            color: Theme.of(context)
+                                                .highlightColor,
+                                            size: 12,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ],
                           ),
-                        ],
+                        ),
                       ),
-                    ),
-                  )
-              );
-            },
-          )
+                    );
+                  } else if(pageLoading == true) {
+                    return Center(
+                      child: Padding(
+                        padding: EdgeInsets.only(left: MediaQuery.of(context).size.width / 2),
+                        child: CupertinoActivityIndicator(
+                          radius: 14,
+                        ),
+                      ),
+                    );
+
+                  } else if(hasData == false) {
+                    return  Center(
+                      child: Padding(
+                        padding:  EdgeInsets.only(left: MediaQuery.of(context).size.width / 2),
+                        child: TutorLmsTextWidget(title: 'Sorry no more data', style: AppTextStyle.themeBoldNormalTextStyle(
+                            fontSize: FontSize.sp_16,color: Theme.of(context).highlightColor
+                        )),
+                      ),
+                    );
+                  }
+                },
+              ),
+            )
+        ),
       ),
-    );
+    );;
   }
 }

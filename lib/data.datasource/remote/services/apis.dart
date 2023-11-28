@@ -14,9 +14,9 @@ class Apis {
   static const dashboardapi = '$baseUrl/api/dashboard';
   static const notification = '$baseUrl/api/announcement/';
   static const faq = '$baseUrl/api/faq/';
-  static const userProfile = '$baseUrl/api/users/update/';
+  static const userProfile = '$baseUrl/api/auth/update';
   static const profileImage = '$baseUrl/api/authprofile-photo';
-  static const memberShipPlan = '$baseUrl/api/membershipPlan';
+  static const memberShipPlan = '$baseUrl/api/membershipPlan/';
   static const createMembershipPlan = '$baseUrl/api/membershipPlan/create';
   static const featuredCourses = '$baseUrl/api/featured-courses/?page=1&limit=10';
   static const funFact = '$baseUrl/api/funfacts/';
@@ -25,4 +25,5 @@ class Apis {
   static const stripePayment = '$baseUrl/api/membershipPlan/create';
   static const getCategory = '$baseUrl/api/all-courses/?page=1&limit=12&category=';
   static const createPayment = '$baseUrl/api/membershipPlan/create/';
+  static const getExistCourse = '$baseUrl/api/courses/course/exist?courseId=';
 }

@@ -38,139 +38,142 @@ class _PurchaseHistoryState extends State<PurchaseHistory> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        appBar: PreferredSize(preferredSize: Size.fromHeight(Dimensions.h_60),child: TutorLmsAppbar(title: 'Purchase History',onTap: ()=> Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (context)=> DashBoard(index: 3))),color: Theme.of(context).scaffoldBackgroundColor,)),
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              VerticalSpacing(height: Dimensions.h_15),
-             loading ? Center(
-               child: Padding(
-                 padding:  EdgeInsets.only(top: Dimensions.h_200),
-                 child: const CupertinoActivityIndicator(
-                   radius: 18,
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: SafeArea(
+        child: Scaffold(
+          appBar: PreferredSize(preferredSize: Size.fromHeight(Dimensions.h_60),child: TutorLmsAppbar(title: 'Purchase History',onTap: ()=> Navigator.pushReplacement(context,
+              MaterialPageRoute(builder: (context)=> DashBoard(index: 3))),color: Theme.of(context).scaffoldBackgroundColor,)),
+          body: SingleChildScrollView(
+            child: Column(
+              children: [
+                VerticalSpacing(height: Dimensions.h_15),
+               loading ? Center(
+                 child: Padding(
+                   padding:  EdgeInsets.only(top: Dimensions.h_200),
+                   child: const CupertinoActivityIndicator(
+                     radius: 18,
+                   ),
                  ),
-               ),
-             ) : (enrolments.isNotEmpty ?? false) ? ListView.builder(
-                shrinkWrap: true,
-                itemCount: enrolments.length ?? 0,
-                physics: const NeverScrollableScrollPhysics(),
-                itemBuilder:(context, index) {
-                  DateTime enrollmentDate = enrolments[index].createdAt ?? DateTime(00, 00, 00);
-                  String formattedDate = DateFormat.yMd().format(enrollmentDate);
-                  DateTime enrollmentDate1 = enrolments[index].createdAt ?? DateTime(00, 00, 00);
-                  String formattedDate1 = DateFormat.yMd().format(enrollmentDate1);
-                  return Column(
-                    children: [
-                      Padding(
-                        padding:  EdgeInsets.only(left: Dimensions.w_15,right: Dimensions.w_15),
-                        child: Container(
-                          decoration: BoxDecoration(
-                              color: Theme.of(context).cardColor,
-                              borderRadius: BorderRadius.circular(10)
-                          ),
-                          child: Column(
-                            children: [
-                              VerticalSpacing(height: Dimensions.h_20),
-                              Padding(
-                                padding:  EdgeInsets.only(left: Dimensions.w_15,right: Dimensions.w_15),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    TutorLmsTextWidget(title: enrolments[index].package.name.toUpperCase() ?? 'GOld', style: AppTextStyle.themeBoldNormalTextStyle(fontSize: FontSize.sp_20, color: Theme.of(context).highlightColor) ),
-                                    Container(
-                                      alignment: Alignment.center,
-                                      height: Dimensions.h_30,
-                                      width: Dimensions.w_80,
-                                      decoration: BoxDecoration(
-                                          color: enrolments[index].status.toString() == "1" ? Colors.green : Colors.red,
-                                          borderRadius: BorderRadius.circular(20)
+               ) : (enrolments.isNotEmpty ?? false) ? ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: enrolments.length ?? 0,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemBuilder:(context, index) {
+                    DateTime enrollmentDate = enrolments[index].createdAt ?? DateTime(00, 00, 00);
+                    String formattedDate = DateFormat.yMd().format(enrollmentDate);
+                    DateTime enrollmentDate1 = enrolments[index].createdAt ?? DateTime(00, 00, 00);
+                    String formattedDate1 = DateFormat.yMd().format(enrollmentDate1);
+                    return Column(
+                      children: [
+                        Padding(
+                          padding:  EdgeInsets.only(left: Dimensions.w_15,right: Dimensions.w_15),
+                          child: Container(
+                            decoration: BoxDecoration(
+                                color: Theme.of(context).cardColor,
+                                borderRadius: BorderRadius.circular(10)
+                            ),
+                            child: Column(
+                              children: [
+                                VerticalSpacing(height: Dimensions.h_20),
+                                Padding(
+                                  padding:  EdgeInsets.only(left: Dimensions.w_15,right: Dimensions.w_15),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      TutorLmsTextWidget(title: enrolments[index].package?.name?.toUpperCase() ?? 'GOld', style: AppTextStyle.themeBoldNormalTextStyle(fontSize: FontSize.sp_20, color: Theme.of(context).highlightColor) ),
+                                      Container(
+                                        alignment: Alignment.center,
+                                        height: Dimensions.h_30,
+                                        width: Dimensions.w_80,
+                                        decoration: BoxDecoration(
+                                            color: enrolments[index].status.toString() == "1" ? Colors.green : Colors.red,
+                                            borderRadius: BorderRadius.circular(20)
+                                        ),
+                                        child: TutorLmsTextWidget(title: enrolments[index].status.toString() == "1" ?"Active":"Inactive"?? '',style: AppTextStyle.normalTextStyle(FontSize.sp_14, Theme.of(context).highlightColor)),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                                VerticalSpacing(height: Dimensions.h_30),
+                                Padding(
+                                  padding:  EdgeInsets.only(left: Dimensions.w_15,right: Dimensions.w_15,),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          TutorLmsTextWidget(title: 'Purchased At',style: AppTextStyle.normalTextStyle(FontSize.sp_12, Theme.of(context).shadowColor)),
+                                          VerticalSpacing(height: Dimensions.h_5),
+                                          TutorLmsTextWidget(title: formattedDate.toLowerCase(),style: AppTextStyle.normalTextStyle(FontSize.sp_14, Theme.of(context).highlightColor)),
+                                        ],
                                       ),
-                                      child: TutorLmsTextWidget(title: enrolments[index].status.toString() == "1" ?"Active":"Inactive"?? '',style: AppTextStyle.normalTextStyle(FontSize.sp_14, Theme.of(context).highlightColor)),
-                                    )
-                                  ],
+                                      Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          TutorLmsTextWidget(title: 'Expired At',style: AppTextStyle.normalTextStyle(FontSize.sp_12, Theme.of(context).shadowColor)),
+                                          VerticalSpacing(height: Dimensions.h_5),
+                                          TutorLmsTextWidget(title:formattedDate1,style: AppTextStyle.normalTextStyle(FontSize.sp_14, Theme.of(context).highlightColor)),
+
+                                        ],
+                                      ),
+                                      Column(
+                                        crossAxisAlignment: CrossAxisAlignment.end,
+                                        children: [
+                                          TutorLmsTextWidget(title:'Price (USD)',style: AppTextStyle.normalTextStyle(FontSize.sp_12, Theme.of(context).shadowColor)),
+                                          VerticalSpacing(height: Dimensions.h_5),
+                                          Padding(
+                                            padding:  EdgeInsets.only(right: Dimensions.w_20),
+                                            child: TutorLmsTextWidget(title: enrolments[index].boughtPrice.toString() ??'0',style: AppTextStyle.normalTextStyle(FontSize.sp_14, Theme.of(context).highlightColor)),
+                                          )
+
+                                        ],
+                                      )
+                                    ],
+                                  ),
                                 ),
-                              ),
-                              VerticalSpacing(height: Dimensions.h_30),
-                              Padding(
-                                padding:  EdgeInsets.only(left: Dimensions.w_15,right: Dimensions.w_15,),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                VerticalSpacing(height: Dimensions.h_20),
+                                Row(
                                   children: [
+                                    HorizontalSpacing(width: Dimensions.w_15),
                                     Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        TutorLmsTextWidget(title: 'Purchased At',style: AppTextStyle.normalTextStyle(FontSize.sp_12, Theme.of(context).shadowColor)),
-                                        VerticalSpacing(height: Dimensions.h_5),
-                                        TutorLmsTextWidget(title: formattedDate.toLowerCase(),style: AppTextStyle.normalTextStyle(FontSize.sp_14, Theme.of(context).highlightColor)),
+                                        TutorLmsTextWidget(title: 'Payment Status ',style: AppTextStyle.normalTextStyle(FontSize.sp_12, Theme.of(context).shadowColor)),
+                                        TutorLmsTextWidget(title: enrolments[index].stPayStatus == 'succeeded'? 'Succeeded' :  'failed' ,style: AppTextStyle.normalTextStyle(FontSize.sp_12, Theme.of(context).highlightColor)),
                                       ],
                                     ),
+                                    HorizontalSpacing(width: Dimensions.w_25),
                                     Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        TutorLmsTextWidget(title: 'Expired At',style: AppTextStyle.normalTextStyle(FontSize.sp_12, Theme.of(context).shadowColor)),
-                                        VerticalSpacing(height: Dimensions.h_5),
-                                        TutorLmsTextWidget(title:formattedDate1,style: AppTextStyle.normalTextStyle(FontSize.sp_14, Theme.of(context).highlightColor)),
-
+                                        TutorLmsTextWidget(title: 'Order Id ',style: AppTextStyle.normalTextStyle(FontSize.sp_12, Theme.of(context).shadowColor)),
+                                        TutorLmsTextWidget(title: enrolments[index].orderId ?? '',style: AppTextStyle.normalTextStyle(FontSize.sp_14, Theme.of(context).highlightColor)),
                                       ],
                                     ),
-                                    Column(
-                                      crossAxisAlignment: CrossAxisAlignment.end,
-                                      children: [
-                                        TutorLmsTextWidget(title:'Price (USD)',style: AppTextStyle.normalTextStyle(FontSize.sp_12, Theme.of(context).shadowColor)),
-                                        VerticalSpacing(height: Dimensions.h_5),
-                                        Padding(
-                                          padding:  EdgeInsets.only(right: Dimensions.w_20),
-                                          child: TutorLmsTextWidget(title: enrolments[index].boughtPrice.toString() ??'0',style: AppTextStyle.normalTextStyle(FontSize.sp_14, Theme.of(context).highlightColor)),
-                                        )
-
-                                      ],
-                                    )
                                   ],
                                 ),
-                              ),
-                              VerticalSpacing(height: Dimensions.h_20),
-                              Row(
-                                children: [
-                                  HorizontalSpacing(width: Dimensions.w_15),
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      TutorLmsTextWidget(title: 'Payment Status ',style: AppTextStyle.normalTextStyle(FontSize.sp_12, Theme.of(context).shadowColor)),
-                                      TutorLmsTextWidget(title: enrolments[index].stPayStatus.toString()==null ? "pending" : "_" ,style: AppTextStyle.normalTextStyle(FontSize.sp_12, Theme.of(context).highlightColor)),
-                                    ],
-                                  ),
-                                  HorizontalSpacing(width: Dimensions.w_25),
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      TutorLmsTextWidget(title: 'Comment ',style: AppTextStyle.normalTextStyle(FontSize.sp_12, Theme.of(context).shadowColor)),
-                                      TutorLmsTextWidget(title: '-',style: AppTextStyle.normalTextStyle(FontSize.sp_14, Theme.of(context).highlightColor)),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                              VerticalSpacing(height: Dimensions.h_20),
-                            ],
+                                VerticalSpacing(height: Dimensions.h_20),
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                      VerticalSpacing(height: Dimensions.h_20),
+                        VerticalSpacing(height: Dimensions.h_20),
 
-                    ],
-                  );
-                },
-              ) : Center(
-               child: TutorLmsTextWidget(title: 'No Data found',
-                   style: AppTextStyle.normalTextStyle(FontSize.sp_16, Theme.of(context).highlightColor)
-               ),
-             )
-            ],
-          ),
-        )
+                      ],
+                    );
+                  },
+                ) : Center(
+                 child: TutorLmsTextWidget(title: 'No Data found',
+                     style: AppTextStyle.normalTextStyle(FontSize.sp_16, Theme.of(context).highlightColor)
+                 ),
+               )
+              ],
+            ),
+          )
 
+        ),
       ),
     );
   }
@@ -185,11 +188,11 @@ purchase() async{
 
       if (response.statusCode == 200) {
         log(response.data);
-        var data = purchaseHistoryFromJsonFromJson(response.data);
+        var data = purchaseHistoryFromJson(response.data);
         if(enrolments.isEmpty ?? false) {
           setState(() {
             loading = false;
-            enrolments.addAll(data.enrolments);
+            enrolments.addAll(data.enrolments ?? []);
           });
         }
         else {
