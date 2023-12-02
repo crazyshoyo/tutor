@@ -2,7 +2,7 @@ import 'dart:convert';
 String createPaymentRequestToJson(CreatePaymentRequest data) => json.encode(data.toJson());
 
 class CreatePaymentRequest {
-  String id;
+  int id;
 
 
   CreatePaymentRequest({

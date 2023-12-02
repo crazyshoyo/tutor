@@ -51,4 +51,13 @@ class MemberRepositoryImpl {
       return Left(ServerFailure(e.message,e.type));
     }
   }
+
+  Future<Either<Failure, CreatePaymentResponse>> payment(CreatePaymentRequest request) async {
+    try {
+      final response = await restClient.post(url: Apis.createPayment, request: request.toJson());
+      return Right(createPaymentResponseFromJson(response));
+    } on ApiException catch (e) {
+      return Left(ServerFailure(e.message,e.type));
+    }
+  }
 }

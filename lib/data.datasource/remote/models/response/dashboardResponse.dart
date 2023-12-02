@@ -1,11 +1,18 @@
+// To parse this JSON data, do
+//
+//     final dashboardResponse = dashboardResponseFromJson(jsonString);
+
 import 'dart:convert';
 
 DashboardResponse dashboardResponseFromJson(String str) => DashboardResponse.fromJson(json.decode(str));
+
 String dashboardResponseToJson(DashboardResponse data) => json.encode(data.toJson());
+
 class DashboardResponse {
   final Courses? courses;
   final List<Recent>? recent;
   final Membership? membership;
+
   DashboardResponse({
     this.courses,
     this.recent,
@@ -29,6 +36,7 @@ class Courses {
   final int? totalEnroll;
   final String? courseCompleted;
   final String? coursePending;
+
   Courses({
     this.totalEnroll,
     this.courseCompleted,
@@ -50,13 +58,16 @@ class Courses {
 
 class Membership {
   final int? id;
+  final String? orderId;
   final int? userId;
   final int? packageId;
   final String? boughtPrice;
+  final dynamic attachedId;
   final String? paymentMethod;
   final int? status;
   final String? stPayStatus;
   final dynamic reason;
+  final dynamic clientResponse;
   final DateTime? expiredAt;
   final DateTime? createdAt;
   final DateTime? updatedAt;
@@ -64,13 +75,16 @@ class Membership {
 
   Membership({
     this.id,
+    this.orderId,
     this.userId,
     this.packageId,
     this.boughtPrice,
+    this.attachedId,
     this.paymentMethod,
     this.status,
     this.stPayStatus,
     this.reason,
+    this.clientResponse,
     this.expiredAt,
     this.createdAt,
     this.updatedAt,
@@ -79,13 +93,16 @@ class Membership {
 
   factory Membership.fromJson(Map<String, dynamic> json) => Membership(
     id: json["id"],
+    orderId: json["order_id"],
     userId: json["user_id"],
     packageId: json["package_id"],
     boughtPrice: json["bought_price"],
+    attachedId: json["attached_id"],
     paymentMethod: json["payment_method"],
     status: json["status"],
     stPayStatus: json["st_pay_status"],
     reason: json["reason"],
+    clientResponse: json["client_response"],
     expiredAt: json["expired_at"] == null ? null : DateTime.parse(json["expired_at"]),
     createdAt: json["created_at"] == null ? null : DateTime.parse(json["created_at"]),
     updatedAt: json["updated_at"] == null ? null : DateTime.parse(json["updated_at"]),
@@ -94,13 +111,16 @@ class Membership {
 
   Map<String, dynamic> toJson() => {
     "id": id,
+    "order_id": orderId,
     "user_id": userId,
     "package_id": packageId,
     "bought_price": boughtPrice,
+    "attached_id": attachedId,
     "payment_method": paymentMethod,
     "status": status,
     "st_pay_status": stPayStatus,
     "reason": reason,
+    "client_response": clientResponse,
     "expired_at": expiredAt?.toIso8601String(),
     "created_at": createdAt?.toIso8601String(),
     "updated_at": updatedAt?.toIso8601String(),
@@ -112,23 +132,27 @@ class Package {
   final String? name;
   final String? price;
   final String? description;
+  final String? type;
 
   Package({
     this.name,
     this.price,
     this.description,
+    this.type,
   });
 
   factory Package.fromJson(Map<String, dynamic> json) => Package(
     name: json["name"],
     price: json["price"],
     description: json["description"],
+    type: json["type"],
   );
 
   Map<String, dynamic> toJson() => {
     "name": name,
     "price": price,
     "description": description,
+    "type": type,
   };
 }
 

@@ -9,7 +9,6 @@ import '../../constants/apptextstyle.dart';
 import '../../constants/constants.dart';
 import '../../constants/fontsize.dart';
 import '../../widgets/spacing.dart';
-import '../../widgets/tb_cached_image.dart';
 import '../../widgets/tutor_lms_container.dart';
 import '../../widgets/tutor_text.dart';
 import '../Course/Course.dart';

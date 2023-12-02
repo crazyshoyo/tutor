@@ -17,7 +17,7 @@ void main() async {
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
   ]);
-  Stripe.publishableKey = "pk_test_51OBDcLSAUT6qynwNFWC1HjCuPUXU00WqPFBPryt4f6PnU2H7KXxBIPQ57duLulqQ7g7go4ACNghGyww1PztQsfwX00JZ72Mp2u";
+  Stripe.publishableKey = "pk_test_51OAAhiEOJdLQSS4jUOrx33Us2oS6d9PbpvfMyxHqYZ5cR4uX72sWEkQG2qfRjtj690Xl9Csb4Efe293b73vHEMDf00DXHAc6nE";
   await Stripe.instance.applySettings();
   HttpOverrides.global = MyHttpOverrides();
   await GetStorage.init();
@@ -30,7 +30,6 @@ void main() async {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
